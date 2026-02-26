@@ -9,8 +9,8 @@ RUN dnf install -y \
     unzip \
     wget \
     bc \
-    temurin-11-jdk \
-    java-11-openjdk-devel \
+    java-11-openjdk-headless \
+    ca-certificates \
     dumb-init \
     hdf5-devel \
     python3.11 \
