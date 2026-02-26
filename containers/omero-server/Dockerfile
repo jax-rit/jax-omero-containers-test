@@ -53,7 +53,7 @@ RUN /opt/omero/server/server_venv/bin/pip install omero-server
 RUN /opt/omero/server/server_venv/bin/pip install omero-cli-transfer==1.3.1
 RUN /opt/omero/server/server_venv/bin/pip install xsdata==26.2
 # needed for OMERO.figure exports:
-RUN /opt/omero/server/server_venv/bin/pip install "reportlab<3.6" markdown "pillow==9.5.0"
+RUN /opt/omero/server/server_venv/bin/pip install reportlab markdown pillow
 
 ARG UID
 # `docker build --build-arg uid=63002` for prod, 63003 for dev
