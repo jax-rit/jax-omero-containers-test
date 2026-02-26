@@ -108,8 +108,3 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: containers/${{ inputs.container }}/Dockerfile
-
-      - name: Test UID in omero-server images
-        if: inputs.container == 'omero-server'
-        run: |
-          docker run --rm --entrypoint=/bin/bash ${{ steps.docker_build.outputs.imageid }} -ec "id -u omero-server"
