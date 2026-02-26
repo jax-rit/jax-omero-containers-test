@@ -19,6 +19,7 @@ RUN dnf install -y \
     vim
 
 # install zeroc-ice runtime dependencies
+RUN sudo dnf config-manager --set-enabled crb
 RUN dnf install -y \
     gcc \
     gcc-c++ \
