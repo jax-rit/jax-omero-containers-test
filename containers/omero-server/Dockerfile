@@ -1,5 +1,5 @@
 # Dockerfile for omero server
-FROM debian:bullseye
+FROM debian:bookworm
 
 # Following https://docs.openmicroscopy.org/omero/5.6.3/sysadmins/unix/server-debian10-ice36.html
 
@@ -45,13 +45,13 @@ RUN cat omero-ice36.env >> /etc/profile
 RUN python3 -mvenv /opt/omero/server/server_venv
 RUN /opt/omero/server/server_venv/bin/pip install --upgrade pip
 RUN /opt/omero/server/server_venv/bin/pip install wheel setuptools
-RUN /opt/omero/server/server_venv/bin/pip install https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20231130/zeroc_ice-3.6.5-cp39-cp39-manylinux_2_28_x86_64.whl
-RUN /opt/omero/server/server_venv/bin/pip install omero-server[default]
-RUN /opt/omero/server/server_venv/bin/pip install omero-py==5.21.0
+RUN /opt/omero/server/server_venv/bin/pip install https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20231130/zeroc_ice-3.6.5-cp311-cp311-manylinux_2_28_x86_64.whl
+RUN /opt/omero/server/server_venv/bin/pip install omero-py==5.22.0
 RUN /opt/omero/server/server_venv/bin/pip install omego
-RUN /opt/omero/server/server_venv/bin/pip install omero-certificates>=0.4.0
-RUN /opt/omero/server/server_venv/bin/pip install omero-cli-transfer==1.3.0
-RUN /opt/omero/server/server_venv/bin/pip install xsdata==25.7
+RUN /opt/omero/server/server_venv/bin/pip install omero-certificates==0.4.0
+RUN /opt/omero/server/server_venv/bin/pip install omero-server
+RUN /opt/omero/server/server_venv/bin/pip install omero-cli-transfer==1.3.1
+RUN /opt/omero/server/server_venv/bin/pip install xsdata==26.2
 # needed for OMERO.figure exports:
 RUN /opt/omero/server/server_venv/bin/pip install "reportlab<3.6" markdown "pillow==9.5.0"
 
@@ -61,7 +61,7 @@ RUN groupadd -g 10000 jaxuserpod
 RUN useradd -ms /bin/bash -g 10000 -u $UID omero-server
 
 WORKDIR /opt/omero/server
-ENV SERVER=https://downloads.openmicroscopy.org/omero/5.6.16/server-ice36.zip
+ENV SERVER=https://downloads.openmicroscopy.org/omero/5.6.17/server-ice36.zip
 RUN wget -q $SERVER -O OMERO.server-ice36.zip
 RUN unzip -q OMERO.server*
 RUN chown -R omero-server OMERO.server-*

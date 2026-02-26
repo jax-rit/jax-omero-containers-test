@@ -1,5 +1,5 @@
 # Dockerfile for an omero web client
-FROM debian:bullseye
+FROM debian:bookworm
 
 # Following https://github.com/ome/omero-web-docker
 
@@ -14,11 +14,10 @@ RUN python3 -m venv /opt/omero/web/venv3
 RUN /opt/omero/web/venv3/bin/pip install --upgrade pip
 RUN /opt/omero/web/venv3/bin/pip install wheel
 
-RUN /opt/omero/web/venv3/bin/pip install numpy
 # TODO: Download & check hash function
-RUN /opt/omero/web/venv3/bin/pip install --upgrade https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20231130/zeroc_ice-3.6.5-cp39-cp39-manylinux_2_28_x86_64.whl
-RUN /opt/omero/web/venv3/bin/pip install omero-py==5.19.5
-RUN /opt/omero/web/venv3/bin/pip install omero-web==5.29.2
+RUN /opt/omero/web/venv3/bin/pip install --upgrade https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20231130/zeroc_ice-3.6.5-cp311-cp311-manylinux_2_28_x86_64.whl
+RUN /opt/omero/web/venv3/bin/pip install omero-py==5.22.0
+RUN /opt/omero/web/venv3/bin/pip install omero-web==5.31.0
 
 RUN /opt/omero/web/venv3/bin/pip install \
         omero-figure \
