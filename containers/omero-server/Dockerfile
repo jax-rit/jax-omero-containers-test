@@ -55,10 +55,10 @@ RUN /opt/omero/server/server_venv/bin/pip install xsdata==25.7
 # needed for OMERO.figure exports:
 RUN /opt/omero/server/server_venv/bin/pip install "reportlab<3.6" markdown "pillow==9.5.0"
 
-ARG uid
+ARG UID
 # `docker build --build-arg uid=63002` for prod, 63003 for dev
 RUN groupadd -g 10000 jaxuserpod
-RUN useradd -ms /bin/bash -g 10000 -u $uid omero-server
+RUN useradd -ms /bin/bash -g 10000 -u $UID omero-server
 
 WORKDIR /opt/omero/server
 ENV SERVER=https://downloads.openmicroscopy.org/omero/5.6.16/server-ice36.zip
