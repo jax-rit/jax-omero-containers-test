@@ -38,7 +38,7 @@ RUN dnf install -y \
 RUN cd /tmp
 RUN wget -q https://github.com/glencoesoftware/zeroc-ice-rhel9-x86_64/releases/download/20231130/Ice-3.6.5-rhel9-x86_64.tar.gz
 RUN tar xf Ice-3.6.5-rhel9-x86_64.tar.gz
-RUN mv Ice-3.6.5-rhel9-x86_64 /opt
+RUN mv Ice-3.6.5 /opt
 
 ADD omero-ice36.env .
 RUN cat omero-ice36.env >> /etc/profile
@@ -83,7 +83,7 @@ USER omero-server
 ENV OMERODIR /opt/omero/server/OMERO.server
 
 # Copied from omero-ice36.env because /etc/profile not useful for kub pod access, just setting these env for omero-server
-ENV ICE_HOME /opt/Ice-3.6.5-rhel9-x86_64		
+ENV ICE_HOME /opt/Ice-3.6.5
 ENV PATH "$ICE_HOME/bin:$PATH"		
 ENV SLICEPATH "$ICE_HOME/slice"
 
