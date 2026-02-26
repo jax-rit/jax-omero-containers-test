@@ -44,8 +44,29 @@ jobs:
       # Extract metadata (tags, labels) for Docker
       # https://github.com/docker/metadata-action
       # https://github.com/docker/build-push-action/blob/master/docs/advanced/tags-labels.md
+      - name: Extract Docker metadata (UID 63002)
+        id: meta_63002
+        if: inputs.container == 'omero-server'
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.container }}
+          tags: |
+            type=raw,value=${{ inputs.container }}-63002
+            type=sha,suffix=-63002
+
+      - name: Extract Docker metadata (UID 63003)
+        id: meta_63003
+        if: inputs.container == 'omero-server'
+        uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
+        with:
+          images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.container }}
+          tags: |
+            type=raw,value=${{ inputs.container }}-63003
+            type=sha,suffix=-63003
+
       - name: Extract Docker metadata
         id: meta
+        if: inputs.container != 'omero-server'
         uses: docker/metadata-action@c299e40c65443455700f0fdfc63efafe5b349051 # v5.10.0
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.container }}
@@ -55,7 +76,30 @@ jobs:
 
       # Build and push Docker image with Buildx
       # https://github.com/docker/build-push-action
+      - name: Build and push Docker image (UID 63002)
+        if: inputs.container == 'omero-server'
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: containers/${{ inputs.container }}
+          push: true
+          tags: ${{ steps.meta_63002.outputs.tags }}
+          labels: ${{ steps.meta_63002.outputs.labels }}
+          file: containers/${{ inputs.container }}/Dockerfile
+          build-args: UID=63002
+
+      - name: Build and push Docker image (UID 63003)
+        if: inputs.container == 'omero-server'
+        uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
+        with:
+          context: containers/${{ inputs.container }}
+          push: true
+          tags: ${{ steps.meta_63003.outputs.tags }}
+          labels: ${{ steps.meta_63003.outputs.labels }}
+          file: containers/${{ inputs.container }}/Dockerfile
+          build-args: UID=63003
+
       - name: Build and push Docker image
+        if: inputs.container != 'omero-server'
         uses: docker/build-push-action@263435318d21b8e681c14492fe198d362a7d2c83 # v6.18.0
         id: docker_build
         with:
@@ -64,3 +108,8 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
           labels: ${{ steps.meta.outputs.labels }}
           file: containers/${{ inputs.container }}/Dockerfile
+
+      - name: Test UID in omero-server images
+        if: inputs.container == 'omero-server'
+        run: |
+          docker run --rm --entrypoint=/bin/bash ${{ steps.docker_build.outputs.imageid }} -ec "id -u omero-server"
