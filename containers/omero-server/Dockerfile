@@ -6,6 +6,7 @@ FROM rockylinux:9
 # Enable EPEL for dumb-init and update
 RUN dnf install -y epel-release && dnf update -y
 RUN dnf install -y \
+    sudo \
     unzip \
     wget \
     bc \
