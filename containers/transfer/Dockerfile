@@ -1,4 +1,4 @@
-FROM google/cloud-sdk:481.0.0
+FROM google/cloud-sdk:558.0.0
 
 RUN apt-get update
 RUN apt-get install -y -q \
@@ -17,9 +17,9 @@ RUN apt-get install -y -q \
 RUN python3 -mvenv /opt/transfer_venv
 RUN /opt/transfer_venv/bin/pip install --upgrade pip
 RUN /opt/transfer_venv/bin/pip install wheel setuptools
-RUN /opt/transfer_venv/bin/pip install https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20231130/zeroc_ice-3.6.5-cp39-cp39-manylinux_2_28_x86_64.whl
+RUN /opt/transfer_venv/bin/pip install https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20231130/zeroc_ice-3.6.5-cp311-cp311-manylinux_2_28_x86_64.whl
 RUN /opt/transfer_venv/bin/pip install notebook
-RUN /opt/transfer_venv/bin/pip install omero-cli-transfer==1.0.1
+RUN /opt/transfer_venv/bin/pip install omero-cli-transfer==1.3.1
 RUN /opt/transfer_venv/bin/pip install google-cloud-storage
 
 RUN groupadd -g 10000 jaxuserpod
