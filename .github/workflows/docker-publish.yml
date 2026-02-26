@@ -16,6 +16,10 @@ on:
           - omero-server
           - omero-web
           - transfer
+      version:
+        description: 'Version tag for the container'
+        required: true
+        type: string
 
 env:
   # Use docker.io for Docker Hub if empty
@@ -51,7 +55,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.container }}
           tags: |
-            type=raw,value=${{ inputs.container }}-63002
+            type=raw,value=${{ inputs.container }}-${{ inputs.version }}-63002
             type=sha,suffix=-63002
 
       - name: Extract Docker metadata (UID 63003)
@@ -61,7 +65,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.container }}
           tags: |
-            type=raw,value=${{ inputs.container }}-63003
+            type=raw,value=${{ inputs.container }}-${{ inputs.version }}-63003
             type=sha,suffix=-63003
 
       - name: Extract Docker metadata
@@ -71,7 +75,7 @@ jobs:
         with:
           images: ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ inputs.container }}
           tags: |
-            type=raw,value=${{ inputs.container }}
+            type=raw,value=${{ inputs.container }}-${{ inputs.version }}
             type=sha
 
       # Build and push Docker image with Buildx
