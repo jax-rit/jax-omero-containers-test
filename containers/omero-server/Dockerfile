@@ -1,48 +1,54 @@
 # Dockerfile for omero server
-FROM debian:bookworm
+FROM rockylinux:9
 
-# Following https://docs.openmicroscopy.org/omero/5.6.3/sysadmins/unix/server-debian10-ice36.html
+# Originally based on https://docs.openmicroscopy.org/omero/5.6.3/sysadmins/unix/server-debian10-ice36.html
+# Updated to rocky9 with help from:
+# https://github.com/ome/omero-install/blob/develop/linux/step01_rocky9_deps.sh
+# https://github.com/ome/omero-server-docker which uses https://galaxy.ansible.com/ui/standalone/namespaces/5249/
 
-RUN apt-get update
-RUN apt-get install -y -q \
+# Install EPEL for dumb-init and update
+RUN dnf install -y epel-release && dnf update -y
+RUN dnf install -y \
+    sudo \
     unzip \
     wget \
     bc \
-    default-jre \
+    java-11-openjdk-devel \
+    ca-certificates \
     dumb-init \
-    libhdf5-serial-dev \
-    python3 \
-    python3-venv \
-    python3-dev \
-    postgresql-client \
-    ca-certificates-java \
+    hdf5-devel \
+    python3.11 \
+    python3.11-devel \
+    postgresql \
     vim
 
-# install zeroc-ice
-RUN apt-get install -y -q \
-    build-essential \
-    db5.3-util \
-    libbz2-dev \
-    libdb++-dev \
-    libdb-dev \
-    libexpat-dev \
-    libmcpp-dev \
-    libssl-dev \
-    mcpp \
-    zlib1g-dev \
-    pkg-config
+# Enable CRB for libdb-cxx
+RUN sudo dnf config-manager --set-enabled crb
+# install zeroc-ice runtime dependencies
+RUN dnf install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    libdb-utils \
+    bzip2-devel \
+    libdb-cxx \
+    libdb-devel \
+    expat-devel \
+    openssl-devel \
+    zlib-devel \
+    pkgconf-pkg-config
 
 # download and place ice files
 RUN cd /tmp
-RUN wget -q https://github.com/ome/zeroc-ice-debian10/releases/download/0.1.0/ice-3.6.5-0.1.0-debian10-amd64.tar.gz
-RUN tar xf ice-3.6.5-0.1.0-debian10-amd64.tar.gz
-RUN mv ice-3.6.5-0.1.0 /opt
+RUN wget -q https://github.com/glencoesoftware/zeroc-ice-rhel9-x86_64/releases/download/20231130/Ice-3.6.5-rhel9-x86_64.tar.gz
+RUN tar xf Ice-3.6.5-rhel9-x86_64.tar.gz
+RUN mv Ice-3.6.5 /opt
 
 ADD omero-ice36.env .
 RUN cat omero-ice36.env >> /etc/profile
 
 # install python dependencies
-RUN python3 -mvenv /opt/omero/server/server_venv
+RUN python3.11 -mvenv /opt/omero/server/server_venv
 RUN /opt/omero/server/server_venv/bin/pip install --upgrade pip
 RUN /opt/omero/server/server_venv/bin/pip install wheel setuptools
 RUN /opt/omero/server/server_venv/bin/pip install https://github.com/glencoesoftware/zeroc-ice-py-linux-x86_64/releases/download/20231130/zeroc_ice-3.6.5-cp311-cp311-manylinux_2_28_x86_64.whl
@@ -78,11 +84,11 @@ ADD entrypoint.sh /usr/local/bin/
 COPY startup /startup/
 
 USER omero-server
-ENV OMERODIR /opt/omero/server/OMERO.server
+ENV OMERODIR=/opt/omero/server/OMERO.server
 
 # Copied from omero-ice36.env because /etc/profile not useful for kub pod access, just setting these env for omero-server
-ENV ICE_HOME /opt/ice-3.6.5-0.1.0		
-ENV PATH "$ICE_HOME/bin:$PATH"		
-ENV SLICEPATH "$ICE_HOME/slice"
+ENV ICE_HOME=/opt/Ice-3.6.5
+ENV PATH="$ICE_HOME/bin:$PATH"		
+ENV SLICEPATH="$ICE_HOME/slice"
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]

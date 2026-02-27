@@ -1,16 +1,17 @@
 # Dockerfile for an omero web client
-FROM debian:bookworm
+FROM rockylinux:9
 
 # Following https://github.com/ome/omero-web-docker
 
-RUN apt-get update
-RUN apt-get install -y unzip python3 python3-venv dumb-init python3-dev zlib1g-dev libjpeg-dev build-essential
+# Enable EPEL for dumb-init and update
+RUN dnf install -y epel-release && dnf update -y
+RUN dnf install -y unzip python3.11 python3.11-devel dumb-init zlib-devel libjpeg-turbo-devel gcc gcc-c++ make
 
 RUN useradd -ms /bin/bash omero-web
 RUN mkdir -p /opt/omero/web/OMERO.web/etc/grid && \
     chown -R omero-web /opt/omero/web/OMERO.web
 
-RUN python3 -m venv /opt/omero/web/venv3
+RUN python3.11 -m venv /opt/omero/web/venv3
 RUN /opt/omero/web/venv3/bin/pip install --upgrade pip
 RUN /opt/omero/web/venv3/bin/pip install wheel
 
