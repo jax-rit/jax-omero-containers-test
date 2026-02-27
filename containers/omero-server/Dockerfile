@@ -6,11 +6,10 @@ FROM rockylinux:9
 # https://github.com/ome/omero-install/blob/develop/linux/step01_rocky9_deps.sh
 # https://github.com/ome/omero-server-docker which uses https://galaxy.ansible.com/ui/standalone/namespaces/5249/
 
-# Enable CRB and install EPEL for dumb-init and update
-RUN dnf install -y sudo
-RUN sudo dnf config-manager --set-enabled crb
+# Install EPEL for dumb-init and update
 RUN dnf install -y epel-release && dnf update -y
 RUN dnf install -y \
+    sudo \
     unzip \
     wget \
     bc \
@@ -23,6 +22,8 @@ RUN dnf install -y \
     postgresql \
     vim
 
+# Enable CRB for libdb-cxx
+RUN sudo dnf config-manager --set-enabled crb
 # install zeroc-ice runtime dependencies
 RUN dnf install -y \
     gcc \
