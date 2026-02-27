@@ -1,16 +1,20 @@
 # Dockerfile for omero server
 FROM rockylinux:9
 
-# Following https://docs.openmicroscopy.org/omero/5.6.3/sysadmins/unix/server-debian10-ice36.html
+# Originally based on https://docs.openmicroscopy.org/omero/5.6.3/sysadmins/unix/server-debian10-ice36.html
+# Updated to rocky9 with help from:
+# https://github.com/ome/omero-install/blob/develop/linux/step01_rocky9_deps.sh
+# https://github.com/ome/omero-server-docker which uses https://galaxy.ansible.com/ui/standalone/namespaces/5249/
 
-# Enable EPEL for dumb-init and update
+# Enable CRB and install EPEL for dumb-init and update
+RUN sudo dnf config-manager --set-enabled crb
 RUN dnf install -y epel-release && dnf update -y
 RUN dnf install -y \
     sudo \
     unzip \
     wget \
     bc \
-    java-11-openjdk-headless \
+    java-11-openjdk-devel \
     ca-certificates \
     dumb-init \
     hdf5-devel \
@@ -20,14 +24,13 @@ RUN dnf install -y \
     vim
 
 # install zeroc-ice runtime dependencies
-RUN sudo dnf config-manager --set-enabled crb
 RUN dnf install -y \
     gcc \
     gcc-c++ \
     make \
     libdb-utils \
     bzip2-devel \
-    libdb-cxx-devel \
+    libdb-cxx \
     libdb-devel \
     expat-devel \
     openssl-devel \
@@ -80,11 +83,11 @@ ADD entrypoint.sh /usr/local/bin/
 COPY startup /startup/
 
 USER omero-server
-ENV OMERODIR /opt/omero/server/OMERO.server
+ENV OMERODIR=/opt/omero/server/OMERO.server
 
 # Copied from omero-ice36.env because /etc/profile not useful for kub pod access, just setting these env for omero-server
-ENV ICE_HOME /opt/Ice-3.6.5
-ENV PATH "$ICE_HOME/bin:$PATH"		
-ENV SLICEPATH "$ICE_HOME/slice"
+ENV ICE_HOME=/opt/Ice-3.6.5
+ENV PATH="$ICE_HOME/bin:$PATH"		
+ENV SLICEPATH="$ICE_HOME/slice"
 
 ENTRYPOINT ["/usr/local/bin/entrypoint.sh"]
