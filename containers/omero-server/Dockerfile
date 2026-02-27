@@ -7,10 +7,10 @@ FROM rockylinux:9
 # https://github.com/ome/omero-server-docker which uses https://galaxy.ansible.com/ui/standalone/namespaces/5249/
 
 # Enable CRB and install EPEL for dumb-init and update
+RUN dnf install -y sudo
 RUN sudo dnf config-manager --set-enabled crb
 RUN dnf install -y epel-release && dnf update -y
 RUN dnf install -y \
-    sudo \
     unzip \
     wget \
     bc \
